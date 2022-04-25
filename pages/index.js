@@ -1,23 +1,35 @@
-import Head from 'next/head'
-import Header from '@components/Header'
-import Footer from '@components/Footer'
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import ContainerBlock from "../components/ContainerBlock";
+import LatestCode from "../components/LatestCode";
+import Hero from "../components/Hero";
+import getLatestRepos from "../lib/getLatestRepos";
+import userData from "../constants/data";
+import axios from "axios";
 
-export default function Home() {
+export default function Home({ repositories }) {
   return (
-    <div className="container">
-      <Head>
-        <title>Next.js Starter!</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <ContainerBlock
+      title="Jorge Sánchez -  Developer and Data Engineer"
+      description="My developer portfolio"
+    >
+      <Hero />
 
-      <main>
-        <Header title="Welcome to my app!" />
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-      </main>
-
-      <Footer />
-    </div>
-  )
+      <LatestCode repositories={repositories} />
+    </ContainerBlock>
+  );
 }
+
+export const getServerSideProps = async () => {
+  console.log(process.env.GITHUB_AUTH_TOKEN);
+  let token = process.env.GITHUB_AUTH_TOKEN;
+
+  const repositories = await getLatestRepos(userData, token);
+  // console.log("REPOSITORIES", repositories);
+
+  return {
+    props: {
+      repositories,
+    },
+  };
+};
